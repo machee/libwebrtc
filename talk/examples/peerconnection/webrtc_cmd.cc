@@ -42,7 +42,6 @@
 
 using rtc::scoped_ptr;
 using rtc::scoped_refptr;
-using webrtc::MediaStreamInterface;
 using webrtc::CreatePeerConnectionFactory;
 using webrtc::DataChannelInterface;
 using webrtc::MockDataChannelObserver;
@@ -50,8 +49,6 @@ using webrtc::PeerConnectionFactoryInterface;
 using webrtc::PeerConnectionInterface;
 using webrtc::PeerConnectionObserver;
 using webrtc::PortAllocatorFactoryInterface;
-using webrtc::VideoSourceInterface;
-using webrtc::VideoTrackInterface;
 
 class ChatDataChannelObserver : public webrtc::DataChannelObserver {
 public:
@@ -133,8 +130,6 @@ class WebRtcConnectionManager
   virtual void OnError();
   virtual void OnStateChange(
       webrtc::PeerConnectionObserver::StateType state_changed);
-  virtual void OnAddStream(webrtc::MediaStreamInterface* stream);
-  virtual void OnRemoveStream(webrtc::MediaStreamInterface* stream);
   virtual void OnIceCandidate(const webrtc::IceCandidateInterface* candidate);
   virtual void OnDataChannel(webrtc::DataChannelInterface* data_channel);
   virtual void OnRenegotiationNeeded();
@@ -151,14 +146,10 @@ class WebRtcConnectionManager
   webrtc::PeerConnectionInterface::IceServer server_;
   webrtc::FakeConstraints constraints_;
   rtc::scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
-  rtc::scoped_refptr<webrtc::AudioTrackInterface> audio_track_;
-  rtc::scoped_refptr<webrtc::MediaStreamInterface> stream_;
   rtc::scoped_refptr<webrtc::DataChannelInterface> data_channel_;
 };
 
 const char kStunServerUri[] = "stun:stun.l.google.com:19302";
-const char kAudioLabel[] = "audio_label";
-const char kStreamLabel[] = "stream_label";
 
 WebRtcConnectionManager::WebRtcConnectionManager() {
   peer_connection_factory_ = webrtc::CreatePeerConnectionFactory();
@@ -171,11 +162,6 @@ WebRtcConnectionManager::WebRtcConnectionManager() {
 bool WebRtcConnectionManager::InitConnection() {
   FakeIdentityService* dtls_service = rtc::SSLStreamAdapter::HaveDtlsSrtp() ? new FakeIdentityService() : NULL;
   peer_connection_ = peer_connection_factory_->CreatePeerConnection(servers_,        NULL, NULL, dtls_service, this);
-  audio_track_ = peer_connection_factory_->CreateAudioTrack(kAudioLabel,
-                                                            NULL);
-  stream_ = peer_connection_factory_->CreateLocalMediaStream(kStreamLabel);
-  stream_->AddTrack(audio_track_);
-  peer_connection_->AddStream(stream_);
   data_channel_ = peer_connection_->CreateDataChannel("test1", NULL);
   data_channel_->RegisterObserver(new ChatDataChannelObserver(data_channel_));
   return true;
@@ -204,14 +190,6 @@ void WebRtcConnectionManager::OnError() {
 
 void WebRtcConnectionManager::OnStateChange(
     webrtc::PeerConnectionObserver::StateType state_changed) {
-}
-
-void WebRtcConnectionManager::OnAddStream(
-    webrtc::MediaStreamInterface* stream) {
-}
-
-void WebRtcConnectionManager::OnRemoveStream(
-    webrtc::MediaStreamInterface* stream) {
 }
 
 void WebRtcConnectionManager::OnIceCandidate(
@@ -316,4 +294,3 @@ int main(int argc, char **argv) {
   rtc::CleanupSSL();
   return 0;
 }
-
