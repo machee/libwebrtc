@@ -112,9 +112,6 @@ class StatsCollector {
   webrtc::StatsReport* GetOrCreateReport(const std::string& type,
                                          const std::string& id,
                                          TrackDirection direction);
-  webrtc::StatsReport* GetReport(const std::string& type,
-                                 const std::string& id,
-                                 TrackDirection direction);
 
   // A map from the report id to the report.
   StatsSet reports_;
