@@ -48,6 +48,20 @@
             # can be excluded automatically.
           ],  # conditions
         }, # target wrtc_build
+        {
+          'target_name': 'webrtc_cmd',
+          'type': 'executable',
+          'sources': [
+            'examples/peerconnection/webrtc_cmd.cc',
+          ],
+          'dependencies': [
+            '<(DEPTH)/third_party/jsoncpp/jsoncpp.gyp:jsoncpp',
+            'libjingle.gyp:libjingle_peerconnection',
+            '<@(libjingle_tests_additional_deps)',
+          ],
+          # TODO(ronghuawu): crbug.com/167187 fix size_t to int truncations.
+          'msvs_disabled_warnings': [ 4309, ],
+        }, # target webrtc_cmd
 
       ], # targets
     }],  # OS=="linux" or OS=="win" or OS="mac"
