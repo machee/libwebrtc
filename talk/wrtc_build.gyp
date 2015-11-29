@@ -62,6 +62,18 @@
           # TODO(ronghuawu): crbug.com/167187 fix size_t to int truncations.
           'msvs_disabled_warnings': [ 4309, ],
         }, # target webrtc_cmd
+        {
+          'target_name': 'datachannel',
+          'type': 'executable',
+          'sources': [
+            'examples/peerconnection/datachannel.cc',
+          ],
+          'dependencies': [
+            '<(DEPTH)/third_party/jsoncpp/jsoncpp.gyp:jsoncpp',
+            'libjingle.gyp:libjingle_peerconnection',
+            '<@(libjingle_tests_additional_deps)',
+          ],
+        }, # target datachannel
 
       ], # targets
     }],  # OS=="linux" or OS=="win" or OS="mac"
